@@ -30,3 +30,6 @@ Conteúdos de estudo preparados com o Claude, prontos para serem lidos por um ap
 - [HTML: a história do HTML](conteudos/html/historia-do-html.json)
 
 
+## App
+
+`app/index.html` é o protótipo do app (layout e fluxo da sessão). Ele vai rodar dentro do APK como uma tela web.
