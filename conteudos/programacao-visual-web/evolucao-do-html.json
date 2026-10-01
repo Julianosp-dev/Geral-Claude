@@ -53,9 +53,10 @@
         "Erro 1: o estagiário colocou a img do logotipo dentro do title. Resultado: o logotipo sumiu da página.",
         "Erro 2: ele trocou o link por um endereço que não existe. Resultado: o link não leva a lugar nenhum.",
         "O destino de um link fica na tag a, no atributo href.",
-        "Correção: a img volta para o body, e o href recebe o endereço certo da versão em português (mozilla.org/pt-BR/about/manifesto)."
+        "Correção feita por um colega experiente: a img voltou para a posição hierárquica correta, no body (logo depois do h1), e o href recebeu o endereço certo em português: https://www.mozilla.org/pt-BR/about/manifesto/.",
+        "Conclusão da aula: pequenas alterações podem gerar grandes problemas. Cuidado com qualquer mudança no HTML."
       ],
-      "dica": "Tag no lugar errado quebra a página. Head = informações. Body = o que aparece."
+      "dica": "Tag no lugar errado quebra a página. Head = informações. Body = o que aparece. Pequenas alterações, grandes problemas."
     }
   ],
   "questoes": [
