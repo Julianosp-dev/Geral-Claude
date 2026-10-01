@@ -1,6 +1,7 @@
 {
   "id": "historia-do-html",
-  "materia": "HTML",
+  "materia": "Programação Visual para Web",
+  "aula": 1,
   "assunto": "A história do HTML",
   "versao": 1,
   "objetivos": [
@@ -57,6 +58,7 @@
   "questoes": [
     {
       "nivel": 1,
+      "parte": 0,
       "tipo": "aberta",
       "enunciado": "De qual linguagem o HTML herdou suas tags?",
       "resposta": "SGML",
@@ -64,6 +66,7 @@
     },
     {
       "nivel": 1,
+      "parte": 0,
       "tipo": "vf",
       "enunciado": "Verdadeiro ou falso: o HTML é uma linguagem de programação.",
       "resposta": "falso",
@@ -71,6 +74,7 @@
     },
     {
       "nivel": 1,
+      "parte": 1,
       "tipo": "aberta",
       "enunciado": "Quem criou o HTML?",
       "resposta": "Tim Berners-Lee",
@@ -78,6 +82,7 @@
     },
     {
       "nivel": 1,
+      "parte": 2,
       "tipo": "aberta",
       "enunciado": "A partir de 1996, qual organização passou a cuidar do HTML?",
       "resposta": "W3C",
@@ -85,6 +90,7 @@
     },
     {
       "nivel": 1,
+      "parte": 3,
       "tipo": "aberta",
       "enunciado": "Qual tag do HTML5 serve para colocar um vídeo na página?",
       "resposta": "<video>",

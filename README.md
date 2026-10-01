@@ -12,7 +12,7 @@ Conteúdos de estudo preparados com o Claude, prontos para serem lidos por um ap
 
 | Campo | O que é |
 |---|---|
-| `id`, `materia`, `assunto`, `versao` | Identificação do conteúdo |
+| `id`, `materia`, `aula`, `assunto`, `versao` | Identificação do conteúdo (`aula` é o número da aula na matéria) |
 | `objetivos` | O que a prova cobra |
 | `partes` | Blocos curtos de estudo: `titulo`, `pontos` (frases curtas) e `dica` |
 | `questoes` | Perguntas, uma por vez |
@@ -20,6 +20,7 @@ Conteúdos de estudo preparados com o Claude, prontos para serem lidos por um ap
 ### Questões
 
 - `nivel`: tamanho do enunciado (1 = curto, 2 = médio, 3 = longo). Treina interpretação aos poucos.
+- `parte` (opcional): índice da parte. A questão aparece logo depois dela, como pergunta rápida. Sem `parte`, vai para o treino de interpretação.
 - `tipo`: `aberta`, `vf` (verdadeiro ou falso) ou `multipla`.
 - `resposta` (aberta e vf) ou `alternativas` + `correta` (índice começando em 0, só na múltipla).
 - `explicacao`: mostrada depois de responder.
@@ -27,9 +28,21 @@ Conteúdos de estudo preparados com o Claude, prontos para serem lidos por um ap
 
 ## Conteúdos
 
-- [HTML: a história do HTML](conteudos/html/historia-do-html.json)
+- [Programação Visual para Web, Aula 1: a história do HTML](conteudos/programacao-visual-web/historia-do-html.json)
 
 
 ## App
 
-`app/index.html` é o protótipo do app (layout e fluxo da sessão). Ele vai rodar dentro do APK como uma tela web.
+- `app/index.html`: o app (protótipo). Vai rodar dentro do APK como uma tela web.
+- `app/app.js`: a lógica do app.
+- `app/build.py`: embute os conteúdos e o `app.js` no `index.html`. Rode depois de qualquer mudança:
+
+```
+python3 app/build.py
+```
+
+### Sondagem
+
+Ao cadastrar uma matéria, o app pergunta: nome, número de aulas, próxima avaliação e data, última nota e tempo por dia.
+Cada aula da matéria precisa ter um conteúdo no app. Aula sem conteúdo conta como **não estudada**.
+Uma aula fica **dominada** quando o último resultado é 80% ou mais.
