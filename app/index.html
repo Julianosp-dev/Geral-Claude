@@ -369,7 +369,7 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
 
   // Matéria de exemplo: a que já tem conteúdo estudado com o Claude.
   var SEED = [
-    { id: 'pvw', nome: 'Programação Visual para Web', aulas: 8, conteudos: { 1: 'historia-do-html' }, tipo: 'Prova', data: '', ok: '', de: '', min: 15 },
+    { id: 'pvw', nome: 'Programação Visual para Web', aulas: 8, conteudos: { 1: 'historia-do-html' }, tipo: 'Prova', data: '2026-10-02', ok: '', de: '', min: 15 },
     { id: 'ux', nome: 'Interface e UX', aulas: 8, conteudos: {}, tipo: 'Recuperação', data: '', ok: 1, de: 10, min: 15 }
   ];
 
@@ -388,7 +388,10 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
   SEED.forEach(function (sd) {
     var m = S.materias.filter(function (x) { return x.id === sd.id; })[0];
     if (!m) S.materias.push(sd);
-    else Object.keys(sd.conteudos).forEach(function (n) { m.conteudos[n] = sd.conteudos[n]; });
+    else {
+      Object.keys(sd.conteudos).forEach(function (n) { m.conteudos[n] = sd.conteudos[n]; });
+      if (sd.data && !m.data) m.data = sd.data;
+    }
   });
   function isSeed(id) { return SEED.some(function (sd) { return sd.id === id; }); }
 
