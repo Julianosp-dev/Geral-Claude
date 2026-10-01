@@ -7,7 +7,10 @@
   function save(k, v) { try { localStorage.setItem('mt.' + k, JSON.stringify(v)); } catch (e) {} }
 
   // Matéria de exemplo: a que já tem conteúdo estudado com o Claude.
-  var SEED = [{ id: 'pvw', nome: 'Programação Visual para Web', aulas: 8, conteudos: { 1: 'historia-do-html' }, tipo: 'Prova', data: '', ok: '', de: '', min: 15 }];
+  var SEED = [
+    { id: 'pvw', nome: 'Programação Visual para Web', aulas: 8, conteudos: { 1: 'historia-do-html' }, tipo: 'Prova', data: '', ok: '', de: '', min: 15 },
+    { id: 'ux', nome: 'Interface e UX', aulas: 8, conteudos: {}, tipo: 'Recuperação', data: '', ok: 1, de: 10, min: 15 }
+  ];
 
   var S = {
     screen: 'home',
@@ -20,6 +23,13 @@
     timer: { left: FOCO, running: false, mode: 'foco' },
     sheet: null, toast: null
   };
+  // Matérias que já cadastramos juntos sempre aparecem, com as aulas que já estão no app.
+  SEED.forEach(function (sd) {
+    var m = S.materias.filter(function (x) { return x.id === sd.id; })[0];
+    if (!m) S.materias.push(sd);
+    else Object.keys(sd.conteudos).forEach(function (n) { m.conteudos[n] = sd.conteudos[n]; });
+  });
+  function isSeed(id) { return SEED.some(function (sd) { return sd.id === id; }); }
 
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
   var LETTERS = 'abcd';
@@ -257,7 +267,7 @@
       html += st === 'vazia' ? '<div class="aula vazia">' + inner + '</div>' : '<button class="aula" data-a="study" data-id="' + m.id + '" data-n="' + a + '">' + inner + '</button>';
     }
     html += '</div>';
-    if (m.id !== 'pvw') html += '<button class="text-btn danger" data-a="delmat">' + (S.del ? 'Toque de novo para remover a matéria' : 'Remover matéria') + '</button>';
+    if (!isSeed(m.id)) html += '<button class="text-btn danger" data-a="delmat">' + (S.del ? 'Toque de novo para remover a matéria' : 'Remover matéria') + '</button>';
     html += '</div><div class="foot">' + (n ? '<button class="btn primary" data-a="study" data-id="' + m.id + '" data-n="' + n + '">Estudar Aula ' + n + ' ' + ICON.arrow + '</button>'
       : '<button class="btn primary" disabled>Nenhuma aula pronta ainda</button>') + '</div>';
     return html;
