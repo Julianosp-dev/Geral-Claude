@@ -28,3 +28,5 @@ Conteúdos de estudo preparados com o Claude, prontos para serem lidos por um ap
 ## Conteúdos
 
 - [HTML: a história do HTML](conteudos/html/historia-do-html.json)
+
+

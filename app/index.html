@@ -1,0 +1,631 @@
+<title>Marca-Texto</title>
+<meta name="description" content="App de estudo para TDAH: uma coisa por vez, leitura guiada e questões curtas.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Lexend:wght@300;400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: protótipo do celular à esquerda, decisões de design à direita; empilha no celular.
+   Identidade: o marca-texto amarelo é a ferramenta do app (grifar o que a questão pede). */
+:root {
+  --bg: #E9EFED;
+  --app-bg: #F4F7F6;
+  --surface: #FFFFFF;
+  --ink: #13201F;
+  --muted: #566764;
+  --line: #D6E0DD;
+  --accent: #1D6B64;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D8ECE8;
+  --hl: #FFE066;
+  --hl-ink: #2B2300;
+  --good: #2C7A4C;
+  --good-soft: #DDF1E4;
+  --warn: #A9532A;
+  --warn-soft: #F9E5DA;
+  --leaf: #3E9A63;
+  --frame: #172221;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Lexend", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --scale: 1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1312; --app-bg: #111B1A; --surface: #182423; --ink: #E3ECEA; --muted: #95A8A4;
+    --line: #283836; --accent: #5BC2B4; --accent-ink: #052320; --accent-soft: #1B3734;
+    --hl: #E8C94A; --hl-ink: #221B00; --good: #74D39C; --good-soft: #163324;
+    --warn: #F1A27C; --warn-soft: #3A2318; --leaf: #5DBE84; --frame: #000000;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B1312; --app-bg: #111B1A; --surface: #182423; --ink: #E3ECEA; --muted: #95A8A4;
+  --line: #283836; --accent: #5BC2B4; --accent-ink: #052320; --accent-soft: #1B3734;
+  --hl: #E8C94A; --hl-ink: #221B00; --good: #74D39C; --good-soft: #163324;
+  --warn: #F1A27C; --warn-soft: #3A2318; --leaf: #5DBE84; --frame: #000000;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.55; padding: 0 16px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 32px 56px; display: grid; grid-template-columns: 410px minmax(0, 1fr); gap: 56px; align-items: start; }
+@media (max-width: 920px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: 20px 40px; } }
+
+/* ---------- Telefone ---------- */
+.phone-col { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); display: grid; gap: 12px; justify-items: center; }
+@media (max-width: 920px) { .phone-col { position: static; } }
+.phone { width: min(390px, 100%); height: min(800px, calc(100svh - 80px)); min-height: 620px; border: 9px solid var(--frame); border-radius: 46px; background: var(--app-bg); overflow: hidden; position: relative; box-shadow: 0 30px 60px -30px rgba(10, 30, 28, .45); }
+.phone-hint { font-size: 12.5px; color: var(--muted); text-align: center; }
+
+.app { height: 100%; display: flex; flex-direction: column; font-size: calc(15px * var(--scale)); position: relative; }
+.app.big { --scale: 1.15; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 18px 18px 8px; min-height: 64px; }
+.bar-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.brand { font-family: var(--f-display); font-weight: 800; font-size: 18px; letter-spacing: -.01em; }
+.brand mark { background: linear-gradient(transparent 55%, var(--hl) 55%); color: inherit; padding: 0 2px; }
+.icon-btn { border: 0; background: var(--surface); color: var(--ink); width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; cursor: pointer; border: 1px solid var(--line); }
+.icon-btn svg { width: 20px; height: 20px; }
+.text-btn { border: 0; background: none; color: var(--muted); font: 500 14px var(--f-body); cursor: pointer; padding: 8px 4px; }
+.timer { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 4px 12px 4px 4px; font: 500 13px var(--f-body); font-variant-numeric: tabular-nums; cursor: pointer; }
+.timer svg { width: 30px; height: 30px; transform: rotate(-90deg); }
+.timer .track { stroke: var(--line); }
+.timer .fill { stroke: var(--accent); transition: stroke-dashoffset 1s linear; }
+.timer.pause .fill { stroke: var(--leaf); }
+.timer small { display: block; font-size: 10.5px; color: var(--muted); line-height: 1; letter-spacing: .04em; text-transform: uppercase; }
+
+.screen { flex: 1; overflow-y: auto; padding: 6px 18px 18px; display: flex; flex-direction: column; gap: 16px; }
+.screen > * { flex-shrink: 0; }
+.foot { padding: 12px 18px calc(18px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; border-top: 1px solid var(--line); background: var(--app-bg); }
+.foot.row { grid-template-columns: auto 1fr; }
+
+h2.title { font-family: var(--f-display); font-weight: 800; font-size: calc(26px * var(--scale)); line-height: 1.12; letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+.eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+
+.btn { border: 0; border-radius: 16px; padding: 15px 18px; font: 600 calc(16px * var(--scale)) var(--f-body); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.btn.small { width: auto; padding: 12px 16px; font-size: 14px; border-radius: 14px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn svg { width: 18px; height: 18px; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--hl); outline-offset: 2px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 18px; }
+.hero { background: var(--accent); color: var(--accent-ink); border: 0; display: grid; gap: 14px; }
+.hero .eyebrow { color: inherit; opacity: .8; }
+.hero h3 { font-family: var(--f-display); font-weight: 800; font-size: 22px; line-height: 1.15; margin: 0; }
+.hero .meta { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { font-size: 12px; font-weight: 500; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, currentColor 14%, transparent); }
+.hero .btn { background: var(--hl); color: var(--hl-ink); }
+
+.plant-card { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; }
+.plant-card svg { width: 96px; height: 112px; }
+.plant-card h4, .subjects h4 { margin: 0 0 2px; font-size: 15px; font-weight: 600; }
+.plant-card p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.streak { display: flex; gap: 5px; margin-top: 10px; }
+.streak span { width: 18px; height: 6px; border-radius: 3px; background: var(--line); }
+.streak span.on { background: var(--leaf); }
+
+.subjects { display: grid; gap: 8px; }
+.subject { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.subject .tag { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font: 500 12px var(--f-mono); }
+.subject.add { border-style: dashed; background: transparent; }
+.subject.add .tag { background: transparent; border: 1px dashed var(--line); color: var(--muted); }
+.subject small { display: block; color: var(--muted); font-size: 12.5px; }
+
+/* progresso da sessão */
+.steps { display: flex; gap: 4px; }
+.steps span { flex: 1; height: 6px; border-radius: 3px; background: var(--line); }
+.steps span.done { background: var(--accent); }
+.steps span.now { background: var(--hl); }
+
+/* estudo */
+.points { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: p; }
+.points li { counter-increment: p; display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 13px 14px; font-size: calc(15.5px * var(--scale)); }
+.points li::before { content: counter(p); width: 26px; height: 26px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font: 500 12.5px var(--f-mono); }
+.points li.old { opacity: .62; }
+.points li.new { border-color: var(--accent); animation: rise .35s ease-out; }
+@keyframes rise { from { transform: translateY(8px); } to { transform: none; } }
+.tip { background: var(--hl); color: var(--hl-ink); border-radius: 18px; padding: 14px 16px; display: grid; gap: 4px; }
+.tip b { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+code, .mono { font-family: var(--f-mono); font-size: .92em; }
+
+/* questão */
+.qhead { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.chip { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); }
+.chip.lvl1 { color: var(--accent); border-color: var(--accent); }
+.chip.lvl2 { color: var(--warn); border-color: var(--warn); }
+.chip.lvl3 { color: var(--hl-ink); background: var(--hl); border-color: var(--hl); }
+.q-text { font-size: calc(17px * var(--scale)); line-height: 1.6; margin: 0; }
+.q-text mark.kw { background: var(--hl); color: var(--hl-ink); padding: 0 4px; border-radius: 4px; font-weight: 600; }
+.q-text .ask { text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 3px; text-underline-offset: 4px; font-weight: 500; }
+.guide { display: grid; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; }
+.guide .step { display: flex; gap: 8px; align-items: center; font-size: 12.5px; font-weight: 600; color: var(--accent); letter-spacing: .04em; text-transform: uppercase; }
+.guide .ask-only { font-size: calc(19px * var(--scale)); font-weight: 500; line-height: 1.45; }
+.guide .ask-only mark { background: linear-gradient(transparent 40%, var(--hl) 40%); color: inherit; padding: 0 2px; }
+
+.alts { display: grid; gap: 10px; }
+.alt { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 13px 14px; border-radius: 16px; background: var(--surface); border: 2px solid var(--line); cursor: pointer; text-align: left; color: var(--ink); font: 400 calc(15px * var(--scale)) var(--f-body); width: 100%; }
+.alt .letter { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--app-bg); border: 1px solid var(--line); font: 500 13px var(--f-mono); }
+.alt.sel { border-color: var(--accent); }
+.alt.sel .letter { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.alt.right { border-color: var(--good); background: var(--good-soft); }
+.alt.wrong { border-color: var(--warn); background: var(--warn-soft); }
+.alt-wrap { display: grid; gap: 6px; }
+.vf-mini { display: flex; gap: 6px; padding-left: 46px; align-items: center; font-size: 12px; color: var(--muted); }
+.vf-mini button { border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: 600 12px var(--f-mono); width: 34px; height: 26px; border-radius: 8px; cursor: pointer; }
+.vf-mini button.on.v { background: var(--good-soft); color: var(--good); border-color: var(--good); }
+.vf-mini button.on.f { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
+.vf { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vf .btn { padding: 22px; font-size: 17px; }
+.field { width: 100%; padding: 15px 16px; border-radius: 16px; border: 2px solid var(--line); background: var(--surface); color: var(--ink); font: 400 calc(17px * var(--scale)) var(--f-body); }
+.field:focus { border-color: var(--accent); outline: none; }
+
+/* folhas inferiores */
+.scrim { position: absolute; inset: 0; background: rgba(8, 18, 17, .38); display: flex; align-items: flex-end; z-index: 5; }
+.sheet { width: 100%; background: var(--surface); border-radius: 26px 26px 0 0; padding: 22px 20px calc(22px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 14px; animation: up .25s ease-out; max-height: 88%; overflow-y: auto; }
+@keyframes up { from { transform: translateY(30px); } to { transform: none; } }
+.sheet h3 { font-family: var(--f-display); font-weight: 800; font-size: 24px; margin: 0; }
+.sheet.ok h3 { color: var(--good); }
+.sheet.no h3 { color: var(--warn); }
+.answer-line { padding: 12px 14px; border-radius: 14px; background: var(--app-bg); font-weight: 500; }
+.setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.setting:last-of-type { border-bottom: 0; }
+.setting small { display: block; color: var(--muted); font-size: 12.5px; }
+.switch { position: relative; width: 50px; height: 30px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; position: absolute; z-index: 1; }
+.switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--line); transition: background .2s; }
+.switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.switch input:checked + span { background: var(--accent); }
+.switch input:checked + span::after { transform: translateX(20px); }
+.switch input:focus-visible + span { outline: 3px solid var(--hl); outline-offset: 2px; }
+
+.toast { position: absolute; left: 16px; right: 16px; bottom: 96px; background: var(--ink); color: var(--app-bg); padding: 12px 14px; border-radius: 14px; font-size: 13.5px; z-index: 6; }
+
+/* resultado */
+.score { display: grid; justify-items: center; gap: 4px; text-align: center; padding: 8px 0; }
+.score .big { font-family: var(--f-display); font-weight: 800; font-size: 56px; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.score svg { width: 130px; height: 150px; }
+.review-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.review-list li { padding: 12px 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); font-size: 14px; }
+
+/* ---------- Notas de design ---------- */
+.notes { display: grid; gap: 32px; min-width: 0; }
+.notes header h1 { font-family: var(--f-display); font-weight: 800; font-size: clamp(34px, 5vw, 52px); line-height: 1.02; letter-spacing: -.03em; margin: 6px 0 12px; text-wrap: balance; }
+.notes header h1 mark { background: linear-gradient(transparent 58%, var(--hl) 58%); color: inherit; padding: 0 4px; }
+.notes header p { margin: 0; max-width: 60ch; color: var(--muted); font-size: 16px; }
+.notes h2 { font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: -.01em; margin: 0 0 14px; }
+.principles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 640px) { .principles { grid-template-columns: minmax(0, 1fr); } }
+.principle { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.principle h3 { margin: 0; font-size: 15.5px; font-weight: 600; }
+.principle p { margin: 0; font-size: 14px; color: var(--muted); }
+.principle .ref { font-size: 12px; font-weight: 500; color: var(--accent); }
+.flow { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-left: 2px solid var(--line); margin-left: 6px; }
+.flow li { position: relative; padding: 0 0 14px 20px; font-size: 14.5px; }
+.flow li::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); }
+.flow li b { font-weight: 600; }
+.sources { font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+.sources a { color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+.app.calm *, .app.calm *::before, .app.calm *::after { animation: none !important; transition: none !important; }
+</style>
+
+<div class="wrap">
+  <div class="phone-col">
+    <div class="phone"><div class="app" id="app"></div></div>
+    <p class="phone-hint">Protótipo navegável. Toque em <b>Começar sessão</b>.</p>
+  </div>
+
+  <article class="notes">
+    <header>
+      <span class="eyebrow">Layout do app · versão 1</span>
+      <h1>Uma coisa por vez, <mark>grifada</mark>.</h1>
+      <p>O app transforma cada conteúdo que estudamos em sessões de 15 minutos: partes curtas que aparecem aos poucos, uma pergunta de cada vez e um treino de leitura para enunciados longos.</p>
+    </header>
+
+    <section>
+      <h2>Por que ele é assim</h2>
+      <div class="principles">
+        <div class="principle">
+          <h3>Uma tela, uma tarefa</h3>
+          <p>Cada tela tem uma ação principal, num botão grande embaixo. Nada de menus cheios ou várias perguntas juntas.</p>
+          <span class="ref">Referência: Duolingo, Brainscape</span>
+        </div>
+        <div class="principle">
+          <h3>O conteúdo aparece aos poucos</h3>
+          <p>Os pontos de cada parte surgem um de cada vez, no seu ritmo. Os anteriores ficam visíveis, mais claros, para você não perder o fio.</p>
+          <span class="ref">Princípio: revelação progressiva</span>
+        </div>
+        <div class="principle">
+          <h3>Leitura guiada</h3>
+          <p>Em questões longas, o app mostra primeiro só a pergunta. Depois mostra o texto com as palavras-chave (INCORRETA, NÃO, EXCETO) grifadas.</p>
+          <span class="ref">A técnica que você treinou aqui</span>
+        </div>
+        <div class="principle">
+          <h3>Marcar V ou F antes de escolher</h3>
+          <p>Quando a questão pede a INCORRETA, cada alternativa ganha botões V e F. Você classifica uma por uma e a resposta aparece sozinha.</p>
+          <span class="ref">Reduz a carga na memória de trabalho</span>
+        </div>
+        <div class="principle">
+          <h3>Errar sem punição</h3>
+          <p>Errou? O app diz "Quase!", explica e traz a pergunta de volta no fim da sessão. Não tem vidas, não tem som de erro.</p>
+          <span class="ref">Recuperação ativa e design tolerante</span>
+        </div>
+        <div class="principle">
+          <h3>Tempo visível</h3>
+          <p>Um anel no topo mostra os 15 minutos de foco e depois avisa a pausa de 5. É o Pomodoro adaptado para TDAH.</p>
+          <span class="ref">Referência: Tiimo</span>
+        </div>
+        <div class="principle">
+          <h3>Recompensa que dá para ver</h3>
+          <p>Cada sessão concluída faz a planta crescer. É um progresso concreto, sem ranking e sem comparação com ninguém.</p>
+          <span class="ref">Referência: Forest, Finch</span>
+        </div>
+        <div class="principle">
+          <h3>Ouvir em vez de ler</h3>
+          <p>Todo ponto tem o botão Ouvir, com a voz do próprio Android. A fonte Lexend foi criada para facilitar a leitura, e dá para aumentar o texto e desligar animações.</p>
+          <span class="ref">Ajustes no botão Aa</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>O caminho de uma sessão</h2>
+      <ol class="flow">
+        <li><b>Início:</b> um único botão, "Começar sessão", e a sua planta.</li>
+        <li><b>Parte:</b> os pontos aparecem um por vez, e no fim vem a dica no marca-texto.</li>
+        <li><b>Pergunta rápida:</b> uma ou duas perguntas curtas sobre aquela parte.</li>
+        <li><b>Treino de interpretação:</b> as questões vão crescendo do nível 1 ao 3.</li>
+        <li><b>Revisão:</b> as perguntas que você errou voltam uma vez.</li>
+        <li><b>Resultado:</b> acertos, o que revisar e a planta maior.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Do protótipo para o APK</h2>
+      <p class="muted" style="margin:0;max-width:62ch">Este mesmo arquivo vira o app: ele roda dentro de um APK como uma tela web, sem precisar reescrever. Os conteúdos continuam nos arquivos JSON que eu preparo quando estudamos juntos.</p>
+    </section>
+
+    <section class="sources">
+      <h2 style="font-size:16px;margin:0 0 4px">Fontes da pesquisa</h2>
+      <a href="https://www.accessibilitychecker.org/blog/neurodivergent-ux-design/" target="_blank" rel="noopener">Princípios de UX para neurodivergentes</a>
+      <a href="https://www.focusbear.io/blog-post/adhd-accessibility-designing-apps-for-focus" target="_blank" rel="noopener">Acessibilidade para TDAH: apps para foco</a>
+      <a href="https://medium.com/design-bootcamp/ux-design-for-adhd-when-focus-becomes-a-challenge-afe160804d94" target="_blank" rel="noopener">UX para TDAH: quando o foco é um desafio</a>
+      <a href="https://www.blabby.ai/blog/pt-br/adhd-study-tips" target="_blank" rel="noopener">Dicas de estudo para TDAH avaliadas por evidências</a>
+      <a href="https://www.selfpause.com/resources/tiimo" target="_blank" rel="noopener">Tiimo: planejamento visual para TDAH</a>
+      <a href="https://lifestack.ai/blog/adhd-apps-for-focus" target="_blank" rel="noopener">Apps para foco com TDAH (Forest, Finch)</a>
+      <a href="https://www.morso.app/blog/best-spaced-repetition-apps-2026" target="_blank" rel="noopener">Comparativo de apps de repetição espaçada 2026</a>
+    </section>
+  </article>
+</div>
+
+<script type="application/json" id="conteudo">{"id": "historia-do-html", "materia": "HTML", "assunto": "A história do HTML", "versao": 1, "objetivos": ["Relatar a história do HTML", "Reconhecer as diferenças entre as versões HTML", "Identificar as mudanças do HTML5"], "partes": [{"titulo": "O que é HTML", "pontos": ["HTML = Hypertext Markup Language (Linguagem de Marcação de Hipertexto).", "Serve para estruturar páginas da web.", "HTML não é linguagem de programação. É de marcação.", "Veio do SGML e herdou dele várias tags.", "Hoje quem padroniza é o W3C (World Wide Web Consortium).", "Foi criado por Tim Berners-Lee, para compartilhar pesquisas com os colegas."], "dica": "HT-M-L: o M é de Markup, que quer dizer marcação. SG-ML e HT-ML terminam igual: ML = Markup Language."}, {"titulo": "Linha do tempo: primeira metade", "pontos": ["1990: Tim Berners-Lee cria o HTML.", "1993: primeira publicação, feita na IETF.", "1995: sai o HTML 2.0, pela IETF."], "dica": "No começo, quem cuidava do HTML era a IETF."}, {"titulo": "Linha do tempo: segunda metade", "pontos": ["A partir de 1996, quem cuida do HTML é o W3C.", "1997: HTML 3.2.", "1999: HTML 4.01.", "2000: XHTML, que é o HTML baseado em XML.", "2008: primeiro rascunho (Working Draft) do HTML5.", "2014: HTML5 oficial.", "2016 e 2017: HTML 5.1 e HTML 5.2."], "dica": "Primeiro foi a IETF, depois o W3C. XHTML vem de XML."}, {"titulo": "O que mudou no HTML5", "pontos": ["Tags video e audio: colocam mídia na página sem plugin (antes era preciso usar o Flash).", "Tags semânticas: header (cabeçalho), nav (menu), footer (rodapé), article e section.", "Tag canvas: serve para desenhar gráficos na página.", "Formulários novos: campos de email, date e number."], "dica": "O HTML5 vai além de algumas tags novas: ele trouxe mídia, semântica, desenho e formulários."}], "questoes": [{"nivel": 1, "tipo": "aberta", "enunciado": "De qual linguagem o HTML herdou suas tags?", "resposta": "SGML", "explicacao": "O SGML é o 'pai' do HTML. Os dois terminam em ML (Markup Language)."}, {"nivel": 1, "tipo": "vf", "enunciado": "Verdadeiro ou falso: o HTML é uma linguagem de programação.", "resposta": "falso", "explicacao": "O HTML é de marcação: ele só organiza o conteúdo, não faz contas nem toma decisões."}, {"nivel": 1, "tipo": "aberta", "enunciado": "Quem criou o HTML?", "resposta": "Tim Berners-Lee", "explicacao": "Tim Berners-Lee criou o HTML em 1990."}, {"nivel": 1, "tipo": "aberta", "enunciado": "A partir de 1996, qual organização passou a cuidar do HTML?", "resposta": "W3C", "explicacao": "Antes era a IETF. A partir de 1996, o W3C."}, {"nivel": 1, "tipo": "aberta", "enunciado": "Qual tag do HTML5 serve para colocar um vídeo na página?", "resposta": "<video>", "explicacao": "A tag <video> coloca vídeo na página sem plugin."}, {"nivel": 2, "tipo": "multipla", "enunciado": "O HTML passou por várias versões ao longo dos anos. Sobre essa evolução, assinale a alternativa INCORRETA:", "alternativas": ["O HTML 2.0 foi publicado em 1995.", "O XHTML é baseado em XML.", "O HTML5 foi lançado oficialmente em 2014.", "O HTML foi criado pelo W3C em 1990."], "correta": 3, "explicacao": "A pergunta pede a INCORRETA. O HTML foi criado por Tim Berners-Lee, e não pelo W3C.", "dica_leitura": "Viu INCORRETA? Marque V ou F em cada alternativa. A resposta é a que ficou com F."}, {"nivel": 2, "tipo": "multipla", "enunciado": "Assinale a alternativa INCORRETA:", "alternativas": ["HTML significa Linguagem de Marcação de Hipertexto.", "O HTML herdou tags do SGML.", "O HTML é uma linguagem de programação.", "O W3C padroniza o HTML atualmente."], "correta": 2, "explicacao": "O HTML é de marcação, não de programação.", "dica_leitura": "Viu INCORRETA? Marque V ou F em cada alternativa. A resposta é a que ficou com F."}, {"nivel": 3, "tipo": "multipla", "enunciado": "Um desenvolvedor está criando o site de uma escola. Ele quer que a página tenha um menu de navegação no topo, um vídeo de apresentação da escola e um rodapé com o endereço e o telefone. Ele decidiu usar o HTML5, pois essa versão trouxe novas tags que facilitam a organização da página. Qual tag ele deve usar para criar o rodapé?", "alternativas": ["<header>", "<nav>", "<footer>", "<video>"], "correta": 2, "explicacao": "<footer> é o rodapé. O texto falava de 3 coisas, mas a pergunta queria só uma.", "dica_leitura": "Leia primeiro a última linha: ela diz o que a questão quer."}]}</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById('conteudo').textContent);
+  var app = document.getElementById('app');
+
+  // perguntas rápidas depois de cada parte; o resto é treino de interpretação
+  var PART_QS = { 0: [0, 1], 1: [2], 2: [3], 3: [4] };
+  var TREINO = [5, 6, 7];
+  var FOCO = 15 * 60, PAUSA = 5 * 60;
+
+  function load(k, d) { try { var v = localStorage.getItem('mt.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem('mt.' + k, JSON.stringify(v)); } catch (e) {} }
+
+  var S = {
+    screen: 'home',
+    sessions: load('sessions', 0),
+    settings: load('settings', { big: false, autoRead: false, calm: false, guided: true }),
+    plan: [], idx: 0, revealed: 1, wrong: [], ok: 0, total: 0, q: null,
+    timer: { left: FOCO, running: false, mode: 'foco' },
+    sheet: null, toast: null
+  };
+
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+  var LETTERS = 'abcd';
+  var ICON = {
+    gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>',
+    sound: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
+  };
+
+  function plantSVG(stage) {
+    stage = Math.max(0, Math.min(6, stage));
+    var top = 104 - (14 + stage * 13);
+    var s = '<svg viewBox="0 0 120 150" aria-hidden="true">';
+    s += '<path d="M60 104 L60 ' + top + '" stroke="var(--leaf)" stroke-width="4" stroke-linecap="round" fill="none"/>';
+    for (var i = 0; i < stage + 1; i++) {
+      var y = 100 - i * 13 - 8, left = i % 2 === 0;
+      if (y < top + 4) break;
+      s += '<ellipse cx="' + (left ? 47 : 73) + '" cy="' + y + '" rx="13" ry="6" fill="var(--leaf)" transform="rotate(' + (left ? 28 : -28) + ' ' + (left ? 47 : 73) + ' ' + y + ')"/>';
+    }
+    s += stage >= 5 ? '<circle cx="60" cy="' + (top - 4) + '" r="9" fill="var(--hl)" stroke="var(--warn)" stroke-width="2"/>' : '<ellipse cx="60" cy="' + (top - 3) + '" rx="6" ry="8" fill="var(--leaf)"/>';
+    s += '<path d="M34 104 H86 L80 140 Q79 144 75 144 H45 Q41 144 40 140 Z" fill="var(--accent)"/><rect x="30" y="100" width="60" height="10" rx="4" fill="var(--accent)"/>';
+    return s + '</svg>';
+  }
+
+  function speak(text) {
+    try {
+      if (!('speechSynthesis' in window)) throw 0;
+      speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'pt-BR'; u.rate = 0.95;
+      speechSynthesis.speak(u);
+    } catch (e) { showToast('A voz não está disponível neste navegador. No app, ela usa a voz do Android.'); }
+  }
+  function showToast(t) { S.toast = t; render(); clearTimeout(showToast.h); showToast.h = setTimeout(function () { S.toast = null; render(); }, 3200); }
+
+  // ---------- sessão ----------
+  function startSession() {
+    S.plan = [];
+    DATA.partes.forEach(function (_, i) {
+      S.plan.push({ t: 'part', p: i });
+      (PART_QS[i] || []).forEach(function (q) { S.plan.push({ t: 'q', q: q, why: 'Pergunta rápida' }); });
+    });
+    S.plan.push({ t: 'intro' });
+    TREINO.forEach(function (q) { S.plan.push({ t: 'q', q: q, why: 'Treino de interpretação' }); });
+    S.idx = 0; S.revealed = 1; S.wrong = []; S.lastWrong = []; S.ok = 0; S.total = 0;
+    S.timer = { left: FOCO, running: true, mode: 'foco' };
+    S.screen = 'session';
+    enterStep();
+  }
+  function enterStep() {
+    var st = S.plan[S.idx];
+    S.revealed = 1;
+    if (st && st.t === 'q') {
+      var lvl = DATA.questoes[st.q].nivel;
+      S.q = { sel: null, marks: {}, guided: S.settings.guided && lvl >= 2 ? 0 : 1, text: '' };
+    }
+    if (st && st.t === 'part' && S.settings.autoRead) speak(DATA.partes[st.p].pontos[0]);
+    render();
+  }
+  function next() {
+    S.sheet = null;
+    S.idx++;
+    if (S.idx >= S.plan.length && S.wrong.length) {
+      S.plan.push({ t: 'revisao' });
+      S.wrong.forEach(function (q) { S.plan.push({ t: 'q', q: q, why: 'Revisão', rev: true }); });
+      S.wrong = [];
+    }
+    if (S.idx >= S.plan.length) { finish(); return; }
+    enterStep();
+  }
+  function finish() {
+    S.sessions++; save('sessions', S.sessions);
+    S.timer.running = false;
+    S.screen = 'result'; render();
+  }
+
+  function norm(s) { return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function check(ok) {
+    var st = S.plan[S.idx];
+    S.total++;
+    if (ok) S.ok++;
+    else if (!st.rev) { S.wrong.push(st.q); S.lastWrong = (S.lastWrong || []).concat(st.q); }
+    S.sheet = { kind: 'feedback', ok: ok };
+    render();
+  }
+
+  function askPart(text) {
+    var parts = text.split(/(?<=[.?!])\s+/);
+    return parts.length > 1 ? { before: parts.slice(0, -1).join(' '), ask: parts[parts.length - 1] } : { before: '', ask: text };
+  }
+  function kw(html) { return html.replace(/(INCORRETA|EXCETO|NÃO|NUNCA|SEMPRE|APENAS)/g, '<mark class="kw">$1</mark>'); }
+
+  // ---------- telas ----------
+  function bar() {
+    var t = S.timer, pct = t.left / (t.mode === 'foco' ? FOCO : PAUSA);
+    var mm = String(Math.floor(t.left / 60)).padStart(2, '0') + ':' + String(t.left % 60).padStart(2, '0');
+    var left = S.screen === 'home'
+      ? '<span class="brand"><mark>Marca</mark>-Texto</span>'
+      : '<button class="text-btn" data-a="home">Sair</button>';
+    var timer = S.screen === 'home' ? '' :
+      '<button class="timer ' + (t.mode === 'pausa' ? 'pause' : '') + '" data-a="timer" aria-label="Cronômetro: ' + mm + (t.running ? ', toque para pausar' : ', toque para continuar') + '">' +
+      '<svg viewBox="0 0 36 36"><circle class="track" cx="18" cy="18" r="15" fill="none" stroke-width="4"/><circle class="fill" cx="18" cy="18" r="15" fill="none" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.25" stroke-dashoffset="' + (94.25 * (1 - pct)).toFixed(2) + '"/></svg>' +
+      '<span>' + mm + '<small>' + (t.mode === 'foco' ? (t.running ? 'foco' : 'pausado') : 'pausa') + '</small></span></button>';
+    return '<div class="bar"><div class="bar-left">' + left + '</div>' + timer +
+      '<button class="icon-btn" data-a="settings" aria-label="Ajustes de leitura">' + ICON.gear + '</button></div>';
+  }
+
+  function steps() {
+    return '<div class="steps" aria-label="Progresso da sessão">' + S.plan.map(function (_, i) {
+      return '<span class="' + (i < S.idx ? 'done' : i === S.idx ? 'now' : '') + '"></span>';
+    }).join('') + '</div>';
+  }
+
+  function home() {
+    var h = new Date().getHours();
+    var hi = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+    return '<div class="screen">' +
+      '<div><span class="eyebrow">' + hi + '</span><h2 class="title">Bora 15 minutos?</h2></div>' +
+      '<div class="card hero"><span class="eyebrow">Sessão de hoje</span><h3>' + esc(DATA.assunto) + '</h3>' +
+      '<div class="meta"><span class="pill">' + DATA.partes.length + ' partes</span><span class="pill">' + DATA.questoes.length + ' questões</span><span class="pill">15 min</span></div>' +
+      '<button class="btn" data-a="start">Começar sessão ' + ICON.arrow + '</button></div>' +
+      '<div class="card plant-card">' + plantSVG(S.sessions) + '<div><h4>Sua planta</h4><p>' +
+      (S.sessions ? S.sessions + (S.sessions === 1 ? ' sessão concluída.' : ' sessões concluídas.') : 'Cada sessão concluída faz ela crescer.') +
+      '</p><div class="streak">' + [0, 1, 2, 3, 4, 5, 6].map(function (i) { return '<span class="' + (i < S.sessions ? 'on' : '') + '"></span>'; }).join('') + '</div></div></div>' +
+      '<div class="subjects"><h4>Matérias</h4>' +
+      '<div class="subject"><span class="tag">&lt;/&gt;</span><div>' + esc(DATA.materia) + '<small>1 assunto · ' + esc(DATA.assunto) + '</small></div></div>' +
+      '<div class="subject add"><span class="tag">+</span><div>Próximo conteúdo<small>Estude com o Claude e atualize o app</small></div></div>' +
+      '</div></div>';
+  }
+
+  function partScreen(st) {
+    var P = DATA.partes[st.p], n = P.pontos.length, done = S.revealed >= n;
+    var items = P.pontos.slice(0, S.revealed).map(function (pt, i) {
+      return '<li class="' + (i === S.revealed - 1 ? 'new' : 'old') + '"><span>' + esc(pt) + '</span></li>';
+    }).join('');
+    var body = '<div class="screen">' + steps() +
+      '<div><span class="eyebrow">Parte ' + (st.p + 1) + ' de ' + DATA.partes.length + ' · ponto ' + S.revealed + ' de ' + n + '</span><h2 class="title">' + esc(P.titulo) + '</h2></div>' +
+      '<ol class="points">' + items + '</ol>' +
+      (done ? '<div class="tip"><b>Dica para lembrar</b><span>' + esc(P.dica) + '</span></div>' : '') +
+      '</div>';
+    var foot = '<div class="foot row"><button class="btn ghost small" data-a="read" aria-label="Ouvir">' + ICON.sound + ' Ouvir</button>' +
+      (done ? '<button class="btn primary" data-a="next">Pergunta rápida ' + ICON.arrow + '</button>'
+            : '<button class="btn primary" data-a="reveal">Próximo ponto</button>') + '</div>';
+    return body + foot;
+  }
+
+  function introScreen(title, text, btn) {
+    return '<div class="screen">' + steps() +
+      '<div class="card" style="display:grid;gap:12px;margin-top:12px"><span class="eyebrow">Agora</span><h2 class="title">' + title + '</h2><p style="margin:0">' + text + '</p></div>' +
+      '<div class="tip"><b>Como ler enunciado longo</b><span>1. Leia a última frase primeiro. 2. Grife palavras como INCORRETA e NÃO. 3. Só então leia o texto.</span></div>' +
+      '</div><div class="foot"><button class="btn primary" data-a="next">' + btn + ' ' + ICON.arrow + '</button></div>';
+  }
+
+  function questionScreen(st) {
+    var Q = DATA.questoes[st.q], q = S.q;
+    var lvlName = ['', 'curta', 'média', 'longa'][Q.nivel];
+    var head = '<div class="qhead"><span class="chip">' + st.why + '</span><span class="chip lvl' + Q.nivel + '">Nível ' + Q.nivel + ' · ' + lvlName + '</span></div>';
+    var sp = askPart(Q.enunciado);
+
+    if (q.guided === 0) {
+      return '<div class="screen">' + steps() + head +
+        '<div class="guide"><span class="step">Passo 1 de 2 · leia só a pergunta</span>' +
+        '<div class="ask-only"><mark>' + kw(esc(sp.ask)) + '</mark></div>' +
+        '<span class="muted" style="font-size:13.5px">Guarde isso na cabeça. É só isso que você precisa achar no texto.</span></div>' +
+        '</div><div class="foot"><button class="btn primary" data-a="guide">Agora ler o texto inteiro ' + ICON.arrow + '</button></div>';
+    }
+
+    var text = '<p class="q-text">' + (sp.before ? kw(esc(sp.before)) + ' ' : '') + '<span class="ask">' + kw(esc(sp.ask)) + '</span></p>';
+    var ans = '', footBtn = '';
+    var inc = /INCORRETA/.test(Q.enunciado);
+    if (Q.tipo === 'multipla') {
+      ans = '<div class="alts">' + Q.alternativas.map(function (a, i) {
+        var cls = 'alt' + (q.sel === i ? ' sel' : '');
+        var marks = inc ? '<div class="vf-mini"><span>Marque:</span><button data-a="mark" data-i="' + i + '" data-v="V" class="v ' + (q.marks[i] === 'V' ? 'on' : '') + '" aria-label="Alternativa ' + LETTERS[i] + ' verdadeira">V</button><button data-a="mark" data-i="' + i + '" data-v="F" class="f ' + (q.marks[i] === 'F' ? 'on' : '') + '" aria-label="Alternativa ' + LETTERS[i] + ' falsa">F</button></div>' : '';
+        return '<div class="alt-wrap"><button class="' + cls + '" data-a="sel" data-i="' + i + '"><span class="letter">' + LETTERS[i] + '</span><span>' + esc(a) + '</span></button>' + marks + '</div>';
+      }).join('') + '</div>';
+      footBtn = '<button class="btn primary" data-a="confirm"' + (q.sel == null ? ' disabled' : '') + '>Confirmar</button>';
+    } else if (Q.tipo === 'vf') {
+      ans = '<div class="vf"><button class="btn ghost" data-a="vf" data-v="verdadeiro">Verdadeiro</button><button class="btn ghost" data-a="vf" data-v="falso">Falso</button></div>';
+      footBtn = '<button class="btn ghost" data-a="dontknow">Não sei</button>';
+    } else {
+      ans = '<input class="field" id="answer" autocomplete="off" placeholder="Sua resposta" value="' + esc(q.text) + '">';
+      footBtn = '<div style="display:grid;grid-template-columns:auto 1fr;gap:10px"><button class="btn ghost small" data-a="dontknow">Não sei</button><button class="btn primary" data-a="open">Responder</button></div>';
+    }
+    var hint = inc && Q.nivel >= 2 ? '<div class="tip"><b>Pede a INCORRETA</b><span>Marque V ou F em cada uma. A resposta é a que ficar com F.</span></div>' : '';
+    return '<div class="screen">' + steps() + head + text + hint + ans + '</div><div class="foot">' + footBtn + '</div>';
+  }
+
+  function result() {
+    var revisar = (S.lastWrong || []).filter(function (v, i, a) { return a.indexOf(v) === i; });
+    return '<div class="screen"><div class="score">' + plantSVG(S.sessions) +
+      '<span class="eyebrow">Sessão concluída</span><span class="big">' + S.ok + ' de ' + S.total + '</span>' +
+      '<span class="muted">' + (S.ok === S.total ? 'Gabaritou. A planta cresceu.' : 'A planta cresceu. O que você errou já foi revisado.') + '</span></div>' +
+      (revisar.length ? '<div><h4 style="margin:0 0 8px;font-size:15px">Para olhar de novo amanhã</h4><ul class="review-list">' +
+        revisar.map(function (q) { return '<li>' + esc(DATA.questoes[q].enunciado.length > 90 ? askPart(DATA.questoes[q].enunciado).ask : DATA.questoes[q].enunciado) + '</li>'; }).join('') + '</ul></div>' : '') +
+      '</div><div class="foot"><button class="btn primary" data-a="home">Voltar ao início</button></div>';
+  }
+
+  function sheet() {
+    if (!S.sheet) return '';
+    if (S.sheet.kind === 'settings') {
+      var o = S.settings;
+      var sw = function (k, t, d) { return '<label class="setting"><span>' + t + '<small>' + d + '</small></span><span class="switch"><input type="checkbox" id="set-' + k + '" data-set="' + k + '"' + (o[k] ? ' checked' : '') + '><span></span></span></label>'; };
+      return '<div class="scrim" data-a="close"><div class="sheet" role="dialog" aria-label="Ajustes">' +
+        '<h3>Ajustes</h3>' +
+        sw('big', 'Texto grande', 'Aumenta as letras em 15%') +
+        sw('guided', 'Leitura guiada', 'Questões longas mostram a pergunta primeiro') +
+        sw('autoRead', 'Ler em voz alta', 'Lê cada ponto novo automaticamente') +
+        sw('calm', 'Sem animações', 'Nada se mexe na tela') +
+        '<button class="btn primary" data-a="close">Pronto</button></div></div>';
+    }
+    var st = S.plan[S.idx], Q = DATA.questoes[st.q], ok = S.sheet.ok;
+    var right = Q.tipo === 'multipla' ? LETTERS[Q.correta] + ') ' + Q.alternativas[Q.correta] : Q.resposta;
+    return '<div class="scrim"><div class="sheet ' + (ok ? 'ok' : 'no') + '" role="dialog" aria-live="polite">' +
+      '<h3>' + (ok ? 'Acertou!' : S.sheet.dk ? 'Tudo bem, é para isso que treinamos' : 'Quase!') + '</h3>' +
+      '<div class="answer-line">Resposta: ' + esc(right) + '</div>' +
+      '<p style="margin:0">' + esc(Q.explicacao) + '</p>' +
+      (!ok && Q.dica_leitura ? '<div class="tip"><b>Dica de leitura</b><span>' + esc(Q.dica_leitura) + '</span></div>' : '') +
+      (!ok && !st.rev ? '<span class="muted" style="font-size:13px">Essa pergunta volta no fim da sessão.</span>' : '') +
+      '<button class="btn primary" data-a="next">Continuar ' + ICON.arrow + '</button></div></div>';
+  }
+
+  function render() {
+    app.className = 'app' + (S.settings.big ? ' big' : '') + (S.settings.calm ? ' calm' : '');
+    var html = bar();
+    if (S.screen === 'home') html += home();
+    else if (S.screen === 'result') html += result();
+    else {
+      var st = S.plan[S.idx];
+      if (st.t === 'part') html += partScreen(st);
+      else if (st.t === 'intro') html += introScreen('Treino de interpretação', 'Agora as questões ficam maiores, do nível 1 ao 3. Use a leitura guiada.', 'Começar treino');
+      else if (st.t === 'revisao') html += introScreen('Revisão rápida', 'As perguntas que você errou voltam uma vez. Sem pressa.', 'Revisar');
+      else html += questionScreen(st);
+    }
+    html += sheet();
+    if (S.toast) html += '<div class="toast" role="status">' + esc(S.toast) + '</div>';
+    var focusId = document.activeElement && document.activeElement.id;
+    app.innerHTML = html;
+    if (focusId) { var f = document.getElementById(focusId); if (f) { f.focus(); if (f.setSelectionRange) f.setSelectionRange(f.value.length, f.value.length); } }
+  }
+
+  // ---------- interações ----------
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-a]');
+    if (!b || !app.contains(b)) return;
+    var a = b.getAttribute('data-a');
+    if (a === 'close' && e.target !== b && b.classList.contains('scrim')) return;
+    var st = S.plan[S.idx];
+    switch (a) {
+      case 'start': startSession(); break;
+      case 'home': S.screen = 'home'; S.sheet = null; S.timer.running = false; render(); break;
+      case 'settings': S.sheet = { kind: 'settings' }; render(); break;
+      case 'close': S.sheet = null; render(); break;
+      case 'timer': S.timer.running = !S.timer.running; render(); break;
+      case 'reveal':
+        S.revealed++; render();
+        if (S.settings.autoRead) speak(DATA.partes[st.p].pontos[S.revealed - 1]);
+        break;
+      case 'read':
+        var P = DATA.partes[st.p];
+        speak(S.revealed >= P.pontos.length ? P.pontos[S.revealed - 1] + '. Dica: ' + P.dica : P.pontos[S.revealed - 1]);
+        break;
+      case 'next': next(); break;
+      case 'guide': S.q.guided = 1; render(); break;
+      case 'sel': S.q.sel = +b.getAttribute('data-i'); render(); break;
+      case 'mark':
+        var i = +b.getAttribute('data-i'), v = b.getAttribute('data-v');
+        S.q.marks[i] = S.q.marks[i] === v ? null : v; render(); break;
+      case 'confirm': if (S.q.sel != null) check(S.q.sel === DATA.questoes[st.q].correta); break;
+      case 'vf': check(b.getAttribute('data-v') === DATA.questoes[st.q].resposta); break;
+      case 'dontknow': check(false); S.sheet.dk = true; render(); break;
+      case 'open':
+        var r = norm(DATA.questoes[st.q].resposta), x = norm(S.q.text);
+        if (!x) { showToast('Escreva uma resposta ou toque em "Não sei".'); break; }
+        check(x === r || (x.length >= 3 && (r.indexOf(x) >= 0 || x.indexOf(r) >= 0)));
+        break;
+    }
+  });
+  app.addEventListener('input', function (e) { if (e.target.id === 'answer') S.q.text = e.target.value; });
+  app.addEventListener('keydown', function (e) { if (e.target.id === 'answer' && e.key === 'Enter') { var b = app.querySelector('[data-a="open"]'); if (b) b.click(); } });
+  app.addEventListener('change', function (e) {
+    var k = e.target.getAttribute('data-set');
+    if (!k) return;
+    S.settings[k] = e.target.checked; save('settings', S.settings); render();
+  });
+
+  setInterval(function () {
+    var t = S.timer;
+    if (!t.running || S.screen !== 'session') return;
+    t.left--;
+    if (t.left <= 0) {
+      if (t.mode === 'foco') { t.mode = 'pausa'; t.left = PAUSA; showToast('15 minutos de foco! Pausa de 5: levanta, bebe água.'); return; }
+      t.mode = 'foco'; t.left = FOCO; showToast('Pausa acabou. Mais 15 minutos?');
+      return;
+    }
+    var fill = app.querySelector('.timer .fill'), lbl = app.querySelector('.timer > span');
+    if (fill && lbl) {
+      var mm = String(Math.floor(t.left / 60)).padStart(2, '0') + ':' + String(t.left % 60).padStart(2, '0');
+      fill.setAttribute('stroke-dashoffset', (94.25 * (1 - t.left / (t.mode === 'foco' ? FOCO : PAUSA))).toFixed(2));
+      lbl.firstChild.nodeValue = mm;
+    }
+  }, 1000);
+
+  render();
+})();
+</script>
