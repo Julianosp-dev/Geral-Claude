@@ -47,3 +47,8 @@ python3 app/build.py
 Ao cadastrar uma matéria, o app pergunta: nome, número de aulas, próxima avaliação e data, última nota e tempo por dia.
 Cada aula da matéria precisa ter um conteúdo no app. Aula sem conteúdo conta como **não estudada**.
 Uma aula fica **dominada** quando o último resultado é 80% ou mais.
+
+### Modo ouvir
+
+Lê a aula inteira em voz alta: partes, dicas e perguntas. Depois de cada pergunta, espera 6 segundos e fala a resposta.
+No APK, a voz vai precisar de um plugin de leitura em voz alta do Android, porque a tela web do Android não tem voz própria.

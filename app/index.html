@@ -252,6 +252,19 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
 .summary dt { color: var(--muted); }
 .summary dd { margin: 0; font-weight: 500; text-align: right; }
 
+/* modo ouvir */
+.lp-bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.lp-bar span { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.lp-now { display: grid; gap: 10px; min-height: 180px; align-content: start; }
+.lp-now .chip { justify-self: start; }
+.lp-now p { margin: 0; font-size: calc(19px * var(--scale)); line-height: 1.5; font-weight: 500; }
+.lp-ctrl { display: flex; align-items: center; justify-content: center; gap: 22px; padding: 6px 0; }
+.icon-btn.lg { width: 56px; height: 56px; border-radius: 18px; }
+.icon-btn.lg svg { width: 22px; height: 22px; }
+.icon-btn:disabled { opacity: .35; cursor: not-allowed; }
+.lp-play { width: 84px; height: 84px; border-radius: 50%; border: 0; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; cursor: pointer; }
+.lp-play svg { width: 34px; height: 34px; }
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 .app.calm *, .app.calm *::before, .app.calm *::after { animation: none !important; transition: none !important; }
 </style>
@@ -563,7 +576,7 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
     var t = S.timer, pct = t.left / (t.mode === 'foco' ? FOCO : PAUSA);
     var mm = String(Math.floor(t.left / 60)).padStart(2, '0') + ':' + String(t.left % 60).padStart(2, '0');
     var left = S.screen === 'home' ? '<span class="brand"><mark>Marca</mark>-Texto</span>'
-      : S.screen === 'session' ? '<button class="text-btn" data-a="leave">Sair</button>'
+      : S.screen === 'session' || S.screen === 'listen' ? '<button class="text-btn" data-a="leave">Sair</button>'
       : '<button class="text-btn" data-a="home">Início</button>';
     var timer = S.screen !== 'session' ? '' :
       '<button class="timer ' + (t.mode === 'pausa' ? 'pause' : '') + '" data-a="timer" aria-label="Cronômetro: ' + mm + (t.running ? ', toque para pausar' : ', toque para continuar') + '">' +
@@ -632,7 +645,7 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
     }
     html += '</div>';
     if (!isSeed(m.id)) html += '<button class="text-btn danger" data-a="delmat">' + (S.del ? 'Toque de novo para remover a matéria' : 'Remover matéria') + '</button>';
-    html += '</div><div class="foot">' + (n ? '<button class="btn primary" data-a="study" data-id="' + m.id + '" data-n="' + n + '">Estudar Aula ' + n + ' ' + ICON.arrow + '</button>'
+    html += '</div><div class="foot' + (n ? ' row' : '') + '">' + (n ? '<button class="btn ghost small" data-a="listen" data-id="' + m.id + '" data-n="' + n + '">' + ICON.sound + ' Ouvir</button><button class="btn primary" data-a="study" data-id="' + m.id + '" data-n="' + n + '">Estudar Aula ' + n + ' ' + ICON.arrow + '</button>'
       : '<button class="btn primary" disabled>Nenhuma aula pronta ainda</button>') + '</div>';
     return html;
   }
@@ -736,6 +749,75 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
     return '<div class="screen">' + steps() + head + text + hint + ans + '</div><div class="foot">' + footBtn + '</div>';
   }
 
+  // ---------- modo ouvir ----------
+  // Lê a aula inteira em sequência. Nas perguntas, espera alguns segundos antes de falar a resposta.
+  var PAUSA_PERGUNTA = 6000;
+  function listenItems(C, n) {
+    var it = [{ k: 'Aula ' + n, t: 'Aula ' + n + ': ' + C.assunto + '.' }];
+    C.partes.forEach(function (P, i) {
+      it.push({ k: 'Parte ' + (i + 1), t: 'Parte ' + (i + 1) + ': ' + P.titulo + '.' });
+      P.pontos.forEach(function (pt) { it.push({ k: P.titulo, t: pt }); });
+      it.push({ k: 'Dica', t: 'Dica para lembrar: ' + P.dica });
+      C.questoes.forEach(function (Q) { if (Q.parte === i) pushQ(it, Q); });
+    });
+    var resto = C.questoes.filter(function (Q) { return Q.parte == null; });
+    if (resto.length) { it.push({ k: 'Treino', t: 'Agora, perguntas de treino. Pense na resposta antes de eu falar.' }); resto.forEach(function (Q) { pushQ(it, Q); }); }
+    it.push({ k: 'Fim', t: 'Fim da aula ' + n + '. Quando puder, faça a sessão no app para treinar as respostas.' });
+    return it;
+  }
+  function pushQ(it, Q) {
+    var t = 'Pergunta: ' + Q.enunciado.replace(/[<>]/g, ' ');
+    if (Q.tipo === 'multipla') t += ' ' + Q.alternativas.map(function (a, i) { return 'Letra ' + LETTERS[i] + ': ' + a.replace(/[<>]/g, ' '); }).join(' ');
+    it.push({ k: 'Pergunta', t: t, wait: PAUSA_PERGUNTA });
+    var r = Q.tipo === 'multipla' ? 'letra ' + LETTERS[Q.correta] + ', ' + Q.alternativas[Q.correta] : Q.resposta;
+    it.push({ k: 'Resposta', t: 'Resposta: ' + String(r).replace(/[<>]/g, ' ') + '. ' + Q.explicacao.replace(/[<>]/g, ' ') });
+  }
+  function startListen(matId, n) {
+    var m = mat(matId);
+    S.matId = matId; S.aula = n; S.cont = CONTEUDOS[m.conteudos[n]];
+    S.lp = { items: listenItems(S.cont, n), i: 0, playing: false, token: 0 };
+    go('listen');
+  }
+  function lpStop() { S.lp.token++; clearTimeout(S.lp.h); try { speechSynthesis.cancel(); } catch (e) {} }
+  function lpPlay() {
+    var lp = S.lp;
+    lpStop();
+    if (!('speechSynthesis' in window)) { showToast('A voz não está disponível neste navegador. No app, ela usa a voz do Android.'); return; }
+    lp.playing = true; render();
+    var tok = lp.token, item = lp.items[lp.i];
+    var u = new SpeechSynthesisUtterance(item.t);
+    u.lang = 'pt-BR'; u.rate = 0.95;
+    u.onend = function () {
+      if (tok !== lp.token) return;
+      lp.h = setTimeout(function () {
+        if (tok !== lp.token) return;
+        if (lp.i < lp.items.length - 1) { lp.i++; lpPlay(); } else { lp.playing = false; render(); }
+      }, item.wait || 500);
+    };
+    speechSynthesis.speak(u);
+  }
+  function lpPause() { lpStop(); S.lp.playing = false; render(); }
+  function listenScreen() {
+    var lp = S.lp, item = lp.items[lp.i], m = mat(S.matId);
+    var aulas = []; for (var a = 1; a <= m.aulas; a++) if (aulaStatus(m, a) !== 'vazia') aulas.push(a);
+    var pos = aulas.indexOf(S.aula);
+    var pct = Math.round((lp.i + 1) / lp.items.length * 100);
+    return '<div class="screen listen">' +
+      '<div><span class="eyebrow">Modo ouvir · ' + esc(m.nome) + '</span><h2 class="title">Aula ' + S.aula + ': ' + esc(S.cont.assunto) + '</h2></div>' +
+      '<div class="lp-bar" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><span style="width:' + pct + '%"></span></div>' +
+      '<div class="card lp-now"><span class="chip' + (item.k === 'Pergunta' ? ' lvl3' : item.k === 'Resposta' ? ' lvl1' : '') + '">' + esc(item.k) + '</span><p>' + esc(item.t) + '</p>' +
+      (item.wait && lp.playing ? '<span class="muted" style="font-size:13px">Depois da pergunta, eu espero ' + (item.wait / 1000) + ' segundos para você pensar.</span>' : '') + '</div>' +
+      '<div class="lp-ctrl">' +
+      '<button class="icon-btn lg" data-a="lp-prev" aria-label="Voltar um trecho"' + (lp.i === 0 ? ' disabled' : '') + '><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>' +
+      '<button class="lp-play" data-a="' + (lp.playing ? 'lp-pause' : 'lp-play') + '" aria-label="' + (lp.playing ? 'Pausar' : 'Tocar') + '">' + (lp.playing ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>' : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z"/></svg>') + '</button>' +
+      '<button class="icon-btn lg" data-a="lp-next" aria-label="Pular trecho"' + (lp.i === lp.items.length - 1 ? ' disabled' : '') + '><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>' +
+      '</div>' +
+      '<p class="muted" style="font-size:13px;margin:0;text-align:center">Trecho ' + (lp.i + 1) + ' de ' + lp.items.length + '. Ouça nas pausas, com a moto parada.</p>' +
+      '</div><div class="foot row">' +
+      '<button class="btn ghost small" data-a="lp-aula" data-n="' + (aulas[pos - 1] || '') + '"' + (pos > 0 ? '' : ' disabled') + '>Aula anterior</button>' +
+      '<button class="btn ghost" data-a="lp-aula" data-n="' + (aulas[pos + 1] || '') + '"' + (pos < aulas.length - 1 ? '' : ' disabled') + '>Próxima aula ' + ICON.arrow + '</button></div>';
+  }
+
   function result() {
     var m = mat(S.matId), st = aulaStatus(m, S.aula);
     var revisar = S.lastWrong.filter(function (v, i, a) { return a.indexOf(v) === i; });
@@ -779,6 +861,7 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
     else if (S.screen === 'materia') html += materiaScreen();
     else if (S.screen === 'survey') html += surveyScreen();
     else if (S.screen === 'result') html += result();
+    else if (S.screen === 'listen') html += listenScreen();
     else {
       var st = S.plan[S.idx];
       if (st.t === 'part') html += partScreen(st);
@@ -792,7 +875,7 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
     app.innerHTML = html;
     if (focusId) { var f = document.getElementById(focusId); if (f) { f.focus(); try { f.setSelectionRange(f.value.length, f.value.length); } catch (e) {} } }
   }
-  function go(screen) { S.screen = screen; S.sheet = null; S.del = false; render(); }
+  function go(screen) { if (S.lp && screen !== 'listen') { lpStop(); S.lp = null; } S.screen = screen; S.sheet = null; S.del = false; render(); }
 
   // ---------- interações ----------
   app.addEventListener('click', function (e) {
@@ -805,6 +888,12 @@ button.subject { width: 100%; text-align: left; font: inherit; color: var(--ink)
       case 'home': S.timer.running = false; go('home'); break;
       case 'leave': S.timer.running = false; go('materia'); break;
       case 'mat': S.matId = b.getAttribute('data-id'); go('materia'); break;
+      case 'listen': startListen(b.getAttribute('data-id'), +b.getAttribute('data-n')); break;
+      case 'lp-play': lpPlay(); break;
+      case 'lp-pause': lpPause(); break;
+      case 'lp-prev': S.lp.i = Math.max(0, S.lp.i - 1); S.lp.playing ? lpPlay() : render(); break;
+      case 'lp-next': S.lp.i = Math.min(S.lp.items.length - 1, S.lp.i + 1); S.lp.playing ? lpPlay() : render(); break;
+      case 'lp-aula': startListen(S.matId, +b.getAttribute('data-n')); break;
       case 'study': startSession(b.getAttribute('data-id'), +b.getAttribute('data-n')); break;
       case 'survey': newSurvey(); break;
       case 'delmat':
