@@ -8,7 +8,7 @@
 
   // Matéria de exemplo: a que já tem conteúdo estudado com o Claude.
   var SEED = [
-    { id: 'pvw', nome: 'Programação Visual para Web', aulas: 8, conteudos: { 1: 'historia-do-html' }, tipo: 'Prova', data: '2026-10-02', ok: '', de: '', min: 15 },
+    { id: 'pvw', nome: 'Programação Visual para Web', aulas: 8, conteudos: { 1: 'historia-do-html', 2: 'evolucao-do-html' }, tipo: 'Prova', data: '2026-10-02', ok: '', de: '', min: 15 },
     { id: 'ux', nome: 'Interface e UX', aulas: 8, conteudos: {}, tipo: 'Recuperação', data: '', ok: 1, de: 10, min: 15 }
   ];
 

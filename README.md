@@ -29,6 +29,7 @@ Conteúdos de estudo preparados com o Claude, prontos para serem lidos por um ap
 ## Conteúdos
 
 - [Programação Visual para Web, Aula 1: a história do HTML](conteudos/programacao-visual-web/historia-do-html.json)
+- [Programação Visual para Web, Aula 2: evolução do HTML e por que ele existe](conteudos/programacao-visual-web/evolucao-do-html.json)
 
 
 ## App

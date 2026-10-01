@@ -1,0 +1,172 @@
+{
+  "id": "evolucao-do-html",
+  "materia": "Programação Visual para Web",
+  "aula": 2,
+  "assunto": "Evolução do HTML e por que ele existe",
+  "versao": 1,
+  "objetivos": [
+    "Relatar o histórico do HTML",
+    "Analisar os fatores que motivaram o surgimento do HTML",
+    "Explicar a necessidade de linguagem de marcação"
+  ],
+  "partes": [
+    {
+      "titulo": "Por que o HTML surgiu",
+      "pontos": [
+        "Trocar informação é essencial para a ciência e para o trabalho.",
+        "A internet levou essa troca para o formato digital.",
+        "O problema: faltava um padrão para representar a informação que circulava na rede.",
+        "O HTML surgiu para estruturar textos digitais de um jeito padronizado.",
+        "Linguagem de marcação marca o que é cada parte do texto (título, parágrafo, link), para qualquer navegador entender."
+      ],
+      "dica": "HTML existe por causa da padronização: todo mundo marcando o texto do mesmo jeito."
+    },
+    {
+      "titulo": "Linha do tempo da Aula 2",
+      "pontos": [
+        "1989: Tim Berners-Lee começa a trabalhar num sistema de hipertextos.",
+        "1993: ele publica oficialmente a primeira versão do HTML.",
+        "1995: HTML 2.0, com poucas inovações e só ajustes menores.",
+        "Entre o 2.0 e o 3.2: várias tags foram criadas só para o navegador Netscape (tags proprietárias).",
+        "1997: o W3C assume a padronização e lança o HTML 3.2. Descarta a maioria das tags proprietárias e traz o suporte ao CSS.",
+        "1998: o CSS se consolida como a linguagem de estilos do HTML. Marcações de estilo saem do HTML.",
+        "2014: HTML5, com semântica, gráficos e multimídia."
+      ],
+      "dica": "HTML organiza, CSS enfeita. Em 1998 o visual saiu do HTML e foi para o CSS."
+    },
+    {
+      "titulo": "Como é hoje",
+      "pontos": [
+        "HTML e CSS não têm mais versões numeradas.",
+        "Eles são atualizados continuamente.",
+        "Uma tag nova entra aos poucos, conforme os navegadores passam a aceitar.",
+        "O JavaScript (oficialmente ECMAScript) ganha uma versão nova por ano."
+      ],
+      "dica": "Hoje o HTML é atualizado o tempo todo. Não existe HTML6."
+    },
+    {
+      "titulo": "Na prática: a estrutura não muda",
+      "pontos": [
+        "As versões trazem recursos novos, mas a estrutura da página continua a mesma.",
+        "No head ficam as informações da página, como title e meta. Elas não aparecem no corpo da página.",
+        "No body fica o que aparece na tela, como h1, img, p e ul.",
+        "Erro 1: o estagiário colocou a img do logotipo dentro do title. Resultado: o logotipo sumiu da página.",
+        "Erro 2: ele trocou o link por um endereço que não existe. Resultado: o link não leva a lugar nenhum.",
+        "O destino de um link fica na tag a, no atributo href.",
+        "Correção: a img volta para o body, e o href recebe o endereço certo da versão em português (mozilla.org/pt-BR/about/manifesto)."
+      ],
+      "dica": "Tag no lugar errado quebra a página. Head = informações. Body = o que aparece."
+    }
+  ],
+  "questoes": [
+    {
+      "nivel": 1,
+      "parte": 0,
+      "tipo": "multipla",
+      "enunciado": "Qual problema o HTML veio resolver?",
+      "alternativas": [
+        "A falta de um padrão para representar a informação na internet.",
+        "A lentidão da internet.",
+        "A falta de cores nas páginas.",
+        "A necessidade de fazer cálculos no navegador."
+      ],
+      "correta": 0,
+      "explicacao": "Faltava padronizar como a informação era representada na rede. O HTML veio para estruturar os textos digitais."
+    },
+    {
+      "nivel": 1,
+      "parte": 1,
+      "tipo": "vf",
+      "enunciado": "Verdadeiro ou falso: o HTML 2.0 trouxe muitas inovações.",
+      "resposta": "falso",
+      "explicacao": "O 2.0 manteve tudo da versão anterior e trouxe só ajustes menores."
+    },
+    {
+      "nivel": 1,
+      "parte": 1,
+      "tipo": "aberta",
+      "enunciado": "Entre o HTML 2.0 e o 3.2, várias tags foram criadas para qual navegador?",
+      "resposta": "Netscape",
+      "explicacao": "Eram tags proprietárias do Netscape. Em 1997 o W3C descartou a maioria delas."
+    },
+    {
+      "nivel": 1,
+      "parte": 1,
+      "tipo": "aberta",
+      "enunciado": "Qual linguagem cuida do visual (estilo) das páginas, e não o HTML?",
+      "resposta": "CSS",
+      "explicacao": "O suporte ao CSS chegou em 1997, e em 1998 ele se consolidou como a linguagem de estilos."
+    },
+    {
+      "nivel": 1,
+      "parte": 2,
+      "tipo": "vf",
+      "enunciado": "Verdadeiro ou falso: hoje o HTML ainda sai em versões numeradas, como HTML6 e HTML7.",
+      "resposta": "falso",
+      "explicacao": "Hoje HTML e CSS são atualizados continuamente, sem versões numeradas."
+    },
+    {
+      "nivel": 1,
+      "parte": 3,
+      "tipo": "aberta",
+      "enunciado": "Qual atributo da tag <a> define para onde o link leva?",
+      "resposta": "href",
+      "explicacao": "O href guarda o endereço de destino do link."
+    },
+    {
+      "nivel": 2,
+      "parte": 3,
+      "tipo": "multipla",
+      "enunciado": "Um estagiário moveu a tag <img> do logotipo para dentro da tag <title>, que fica no <head>. O que acontece com a página?",
+      "alternativas": [
+        "O logotipo some da página.",
+        "O logotipo aparece duas vezes.",
+        "A página passa a ficar em inglês.",
+        "O link para de funcionar."
+      ],
+      "correta": 0,
+      "explicacao": "O head guarda informações da página, que não aparecem no corpo. A img precisa ficar no body para aparecer."
+    },
+    {
+      "nivel": 2,
+      "tipo": "multipla",
+      "enunciado": "Por que a web precisa de uma linguagem de marcação?",
+      "alternativas": [
+        "Para padronizar como o conteúdo é estruturado e exibido.",
+        "Para fazer cálculos matemáticos.",
+        "Para deixar a internet mais rápida.",
+        "Para substituir o navegador."
+      ],
+      "correta": 0,
+      "explicacao": "A marcação diz o que é cada parte do conteúdo, do mesmo jeito para todos os navegadores."
+    },
+    {
+      "nivel": 2,
+      "tipo": "multipla",
+      "enunciado": "Sobre a evolução do HTML, assinale a alternativa INCORRETA:",
+      "alternativas": [
+        "Em 1997, o W3C assumiu a padronização do HTML.",
+        "O HTML 3.2 trouxe o suporte ao CSS.",
+        "O HTML 2.0 trouxe muitas inovações.",
+        "O HTML5 trouxe semântica e recursos de multimídia."
+      ],
+      "correta": 2,
+      "explicacao": "A pergunta pede a INCORRETA. O HTML 2.0 trouxe poucas inovações, só ajustes menores.",
+      "dica_leitura": "Viu INCORRETA? Marque V ou F em cada alternativa. A resposta é a que ficou com F."
+    },
+    {
+      "nivel": 3,
+      "tipo": "multipla",
+      "enunciado": "Uma empresa mantém uma página sobre a filosofia da Mozilla. O link para o Manifesto Mozilla aponta para a versão em inglês do texto, e um funcionário novo recebeu a tarefa de apontar o link para a versão em português. Ele trocou o endereço por https://www.mozilla.com.br/about/manifesto/ e, depois disso, o link parou de levar a qualquer página. Qual foi o erro do funcionário?",
+      "alternativas": [
+        "Usou a tag errada para criar o link.",
+        "Informou um endereço que não existe.",
+        "Esqueceu o atributo src no link.",
+        "Colocou o link dentro do head."
+      ],
+      "correta": 1,
+      "explicacao": "A tag <a> e o atributo href estavam certos. O problema foi o endereço: mozilla.com.br não existe.",
+      "dica_leitura": "Leia primeiro a última linha: ela diz o que a questão quer."
+    }
+  ]
+}
